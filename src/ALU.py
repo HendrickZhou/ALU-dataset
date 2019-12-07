@@ -66,15 +66,15 @@ class ALU:
             'rol' : self.ROL,
         }
         self.bits = num_bit
-        # self.op_code_list = op_code_list
+        self.op_code_list = op_code_list
         self.op_code_len = op_code_list.__len__().bit_length()
         op_bits = []
         meta_dic = dict()
         for i in range(len(op_code_list)):
-            op_bits.append(self.toNBit(i+1, self.op_code_len))
             meta_dic[op_code_list[i]] = self.toNBit(i+1, self.op_code_len)
-        self.op_bits = op_bits
         self.meta_dic = meta_dic
+        self.data_dim = 2*self.bits + self.op_code_len
+        self.label_dim = self.bits
 
     def __call__(self, A, B, op_code):
         """
@@ -155,7 +155,7 @@ class ALU:
         # give the bit, generate the decimal range for us
         self.low = 0
         self.high = int('1' * self.bits, 2)
-        return range(self.low, self.high + 1)
+        return range(self.low, self.high + 1), self.op_code_list
     
     def toNBit(self, number, bits=None):
         if not bits:
@@ -167,7 +167,12 @@ class ALU:
                     return b
             else:
                 min_bits = max(self.bits, number.bit_length())
-                return bin(number + (1<<min_bits))[2:][-self.bits:]
+                pos = number + (1 << min_bits)
+                if pos.bit_length() < self.bits:
+                    b = (self.bits - pos.bit_length())*'0' + bin(pos)[2:]
+                    return b
+                return bin(pos)[2:][-self.bits:]       
+
 
         else:
             if number > 0:
@@ -178,12 +183,31 @@ class ALU:
                     return b
             else:
                 min_bits = max(bits, number.bit_length())
-                return bin(number + (1<<min_bits))[2:][-bits:]           
+                pos = number + (1 << min_bits)
+                if pos.bit_length() < bits:
+                    b = (bits - pos.bit_length())*'0' + bin(pos)[2:]
+                    return b
+                return bin(pos)[2:][-bits:]       
 
+
+#def toNBit(number, bits):
+#    if number > 0:
+#        b =  bin(number)[2:][-bits:]
+#        if number.bit_length() < bits:
+#            return (bits - number.bit_length())*'0' + b
+#        else:
+#            return b
+#    else:
+#        min_bits = max(bits, number.bit_length())
+#        pos = number + (1 << min_bits)
+#        if pos.bit_length() < bits:
+#            b = (bits - pos.bit_length())*'0' + bin(pos)[2:]
+#            return b
+#        return bin(pos)[2:][-bits:]       
 
 if __name__ == "__main__":
     dumbALU = ALU()
-    print(dumbALU.meta_dic)
+    # print(dumbALU.meta_dic)
 
     # for n in dumbALU.gen_range():
     #     for m in dumbALU.gen_range():
@@ -193,8 +217,9 @@ if __name__ == "__main__":
     # for i in range(16):
     #     print(dumbALU(1, i, 'ror'))
 
-    print(dumbALU(10, 1, 'mul'))
+    # print(dumbALU(10, 1, 'mul'))
     # print(dumbALU(10, 89, 'muh'))
     # print(dumbALU(10, 0, 'd'))
     # print(dumbALU(11, 0, 'r'))
+
 
