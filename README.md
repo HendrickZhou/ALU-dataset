@@ -1,7 +1,7 @@
 # ALU-dataset
 Dataset for simulating Arithmetic Logic Unit\
 
-##Format of our dataset
+## Format of our dataset
 follow the same convention of [CIFAR-10 and CIFAR-100](https://www.cs.toronto.edu/~kriz/cifar.html)\
 Datas are stored in the form of pickle object\
 After unpickling the data we get a dictionary of 'data' and 'label'.
