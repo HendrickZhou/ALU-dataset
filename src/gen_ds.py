@@ -118,3 +118,6 @@ if __name__ == '__main__':
     # ds = Dataset(6, "ALU-6-14_batch", output_path)
     ds = Dataset(1, output_path)
     ds()
+    # for data, label in iter(ds):
+    #     print(data)
+    #     print(label)
